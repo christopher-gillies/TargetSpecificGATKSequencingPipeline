@@ -88,9 +88,18 @@ cd qplot
 make
 ```
 
+# Download Reference files
+* note that there are about 20gb in reference files
+```
+mkdir ~/sequencing_reference_files
+wget -r --no-parent --reject "index.html*" http://glom.sph.umich.edu/TargetedSequencingPipelineReferences/
+```
+
+# Use Release version of TargetSpecificGATKSequencingPipeline
 
 
 
+# Use Source version of TargetSpecificGATKSequencingPipeline
 
 ###To build you will need to install VCFAnalysisTools jar into your local maven repository
 export LIB=./lib/VCFAnalysisTools-1.03.jar
