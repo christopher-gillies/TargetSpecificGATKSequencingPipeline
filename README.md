@@ -2,13 +2,23 @@
 This package takes FASTQ files and produces a filtered VCF file
 
 # Setup 
-* this has been tested on 
+* this has been tested on Ubuntu 14.04.3
 
 # Install dependencies
 
 ### git
 ```
 sudo apt-get install git
+```
+
+### java
+```
+sudo apt-get install openjdk-6-jre-headless
+```
+
+### maven if you want to build source
+```
+sudo apt-get install maven
 ```
 
 ### If you are interested in read trimming
@@ -38,13 +48,45 @@ cp ~/Downloads/GenomeAnalysisTK-3.4-46.tar.bz2 .
 tar -xvf GenomeAnalysisTK-3.4-46.tar.bz2
 ```
 
-* samtools
+* htslib and samtools
 ```
+sudo apt-get install libncurses5-dev
+sudo apt-get install zlib1g-dev
+cd ~/sequencing_programs
+git clone https://github.com/samtools/htslib.git
+cd htslib
+make
 cd ~/sequencing_programs
 git clone git://github.com/samtools/samtools.git  
 cd samtools
 ```
 
+* bwa
+```
+cd ~/sequencing_programs
+git clone https://github.com/lh3/bwa.git
+make
+```
+
+* picard tools
+```
+cd ~/sequencing_programs
+wget https://github.com/broadinstitute/picard/releases/download/1.139/picard-tools-1.139.zip
+unzip picard-tools-1.139.zip
+```
+
+* qplot
+```
+cd ~/sequencing_programs
+git clone https://github.com/statgen/libStatGen
+cd libStatGen
+make
+cd ~/sequencing_programs
+wget http://www.sph.umich.edu/csg/zhanxw/software/qplot/qplot-source.20130627.tar.gz
+tar -xvf qplot-source.20130627.tar.gz
+cd qplot
+make
+```
 
 
 
