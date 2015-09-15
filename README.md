@@ -88,6 +88,12 @@ cd qplot
 make
 ```
 
+### If you want to use the svm filter
+```
+sudo apt-get install r-core-base
+Rscript -e 'install.packages("ggplot2",rpos="http://cran.wustl.edu/")' 
+```
+
 # Download Reference files
 * note that there are about 20gb in reference files
 ```
