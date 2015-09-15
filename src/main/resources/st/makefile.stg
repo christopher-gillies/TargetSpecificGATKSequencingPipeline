@@ -1,0 +1,12 @@
+
+listTargetsForEntries(entries) ::= "<entries:{entry | <entry.target><\t>}>"
+
+listDependeciesForEntry(entry) ::= "<entry.dependencies:{dependency | <dependency.target><\t>}>"
+
+writeCommandsForEntry(entry) ::= "<entry.commands:{command | <\t><command><\n>}>"
+
+writeEntry(entry) ::= "<if(entry.comment)>#<entry.comment><\n><endif><entry.target>:<\t><listDependeciesForEntry(entry)><\n><writeCommandsForEntry(entry)>"
+
+writeEntries(entries) ::= "<entries:{entry | <writeEntry(entry)><\n>}>"
+
+makefile(entries) ::= "all:<\t><listTargetsForEntries(entries)><\n><\t>touch $@.OK<\n><\n><writeEntries(entries)>"

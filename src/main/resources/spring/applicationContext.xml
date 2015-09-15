@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd 
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- USE PROPERTIES IN FILE FIRST THEN LOOK AT SYSTEM -->
+	 <!--
+	<context:property-placeholder location="classpath:application.properties" system-properties-mode="FALLBACK"/>
+	-->
+	<context:component-scan base-package="org.kidneyomics.fluidigm" /> 
+	
+	<bean id="applicationProperties" class="org.kidneyomics.fluidigm.ApplicationPropertiesImpl">
+       <!--  
+        <property name="gatk" value="${gatk}"/>
+        <property name="bwa" value="${bwa}"/>
+        <property name="samtools" value="${samtools}"/>
+        <property name="reference" value="${reference}"/>
+        <property name="picard" value="${picard}"/> 
+        <property name="make" value="${make}"/>
+        <property name="jvmSize" value="${jvmSize}"/>
+        <property name="cutadapt" value="${cutadapt}"/>
+        <property name="_1000GIndels" value="${_1000GIndels}"/>
+        <property name="goldIndels" value="${goldIndels}"/>
+        <property name="java" value="${java}"/>
+        <property name="dbsnp" value="${dbsnp}"/>
+        <property name="qplot" value="${qplot}"/>
+        <property name="gencode" value="${gencode}"/>
+        <property name="omniSites" value="${omniSites}"/>
+        <property name="_1000GHighConfSnps" value="${_1000GHighConfSnps}"/>
+        <property name="hapmap33" value="${hapmap33}"/>
+        <property name="exacSites" value="${exacSites}"/>
+        <property name="_1000GSites" value="${_1000GSites}"/>
+        
+        -->
+    </bean>
+    
+    <bean id="makeFileBuilder" class="org.kidneyomics.fluidigm.MakeFileBuilder">
+   
+    </bean>
+    
+    <!-- DO NOT PUT '/' in front of raw it will not work!!!! -->
+    <!-- NOT: st/raw/ -->
+    <bean id="bamStatMergeWriter" class="org.kidneyomics.fluidigm.BamStatMergeWriter" scope="prototype">
+    	<property name="templateDirectory" value="st/raw" />
+    </bean>
+    
+   <bean id="vcfMergeWriter" class="org.kidneyomics.fluidigm.VCFMergeWriter" scope="prototype">
+    	<property name="templateDirectory" value="st/raw" />
+    </bean>
+    
+     <bean id="bamStatQCWriter" class="org.kidneyomics.fluidigm.BamStatQCWriter" scope="prototype">
+    	<property name="templateDirectory" value="st/raw" />
+    </bean>
+    
+    <bean id="siteQualityScriptWriter" class="org.kidneyomics.fluidigm.SiteQualityScriptWriter" scope="prototype">
+    	<property name="templateDirectory" value="st/raw" />
+    </bean>
+    
+     <bean id="svmScriptWriter" class="org.kidneyomics.fluidigm.SVMScriptWriter" scope="prototype">
+    	<property name="templateDirectory" value="st/raw" />
+    </bean>
+    
+    <bean id="variantQualityScriptWriter" class="org.kidneyomics.fluidigm.VariantQualityScriptWriter" scope="prototype">
+    	<property name="templateDirectory" value="st/raw" />
+    </bean>
+    
+    <bean id="makeFileWriter" class="org.kidneyomics.fluidigm.MakeFile" scope="prototype">
+    	<constructor-arg type="java.lang.String" value="st/makefile.stg" />
+    </bean>
+    
+    <bean id="siteInfoCollector" scope="prototype" class="org.kidneyomics.fluidigm.GATKSiteInfoCollector">
+    	<property name="applicationProperties" ref="applicationProperties"></property>
+    </bean>
+    
+     <bean id="variantInfoCollector" scope="prototype" class="org.kidneyomics.fluidigm.GATKVariantInfoCollector">
+    	<property name="applicationProperties" ref="applicationProperties"></property>
+    </bean>
+    
+    <bean id="siteQualityFilter" scope="prototype" class="org.kidneyomics.fluidigm.SiteQualityFilter">
+    	<property name="applicationProperties" ref="applicationProperties"></property>
+    </bean>
+    
+    <bean id="variantQualityFilter" scope="prototype" class="org.kidneyomics.fluidigm.VariantQualityFilter">
+    	<property name="applicationProperties" ref="applicationProperties"></property>
+    </bean>
+    
+    <bean id="siteSvmFilter" scope="prototype" class="org.kidneyomics.fluidigm.SiteSVMFilter">
+    	<property name="applicationProperties" ref="applicationProperties"></property>
+    </bean>
+    
+</beans>
