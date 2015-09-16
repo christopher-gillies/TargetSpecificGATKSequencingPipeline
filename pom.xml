@@ -90,7 +90,26 @@
 			<artifactId>VCFAnalysisTools</artifactId>
 			<version>1.03</version>
 		</dependency>
-		
+	
+	<!-- samtools -->
+	     <dependency>
+      <groupId>net.sf.picard</groupId>
+      <artifactId>picard</artifactId>
+      <version>1.107</version>
+      <scope>compile</scope>
+    </dependency>
+     <dependency>
+      <groupId>net.sf.samtools</groupId>
+      <artifactId>sam</artifactId>
+      <version>1.107</version>
+      <scope>compile</scope>
+    </dependency>
+     <dependency>
+      <groupId>org.broad.tribble</groupId>
+      <artifactId>tribble</artifactId>
+      <version>1.107</version>
+      <scope>compile</scope>
+    </dependency>		
 		<!-- JEXL -->
         <dependency>
 			<groupId>org.apache.commons</groupId>
