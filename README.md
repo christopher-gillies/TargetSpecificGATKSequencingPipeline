@@ -14,9 +14,23 @@ sudo apt-get install git
 ```
 
 ### java
+* GATK does not appear to work very well with openjdk so install oracle java
+* http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html
+* 
 ```
-sudo apt-get install openjdk-6-jre
-sudo apt-get install openjdk-6-jdk
+cd ~/Downloads/
+tar -xvf jdk-7u79-linux-x64.tar.gz
+sudo mkdir -p /usr/lib/jvm
+sudo mv ./jdk1.7.0_79 /usr/lib/jvm/
+sudo update-alternatives --install "/usr/bin/java" "java" "/usr/lib/jvm/jdk1.7.0_79/bin/java" 2000
+sudo update-alternatives --install "/usr/bin/javac" "javac" "/usr/lib/jvm/jdk1.7.0_79/bin/javac" 2000
+sudo update-alternatives --install "/usr/bin/javaws" "javaws" "/usr/lib/jvm/jdk1.7.0_79/bin/javaws" 2000
+
+java -version
+# Result
+# java version "1.7.0_79"
+# Java(TM) SE Runtime Environment (build 1.7.0_79-b15)
+# Java HotSpot(TM) 64-Bit Server VM (build 24.79-b02, mixed mode)
 ```
 
 ### maven if you want to build source
