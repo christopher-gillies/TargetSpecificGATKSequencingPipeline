@@ -21,7 +21,7 @@ public class TestFASTQ {
 		assertTrue(a.isPairedEnd());
 	}
 	
-	@Test
+	//@Test
 	public void test3() {
 		FASTQ a = new FASTQ();
 		a.setFile1("/Users/cgillies/Documents/workspace-sts-3.6.1.RELEASE/FluidigmAlignmentVariantCalling/pairedEndTestData/446840_S1_L001_R1_001.fastq.gz");
@@ -30,7 +30,7 @@ public class TestFASTQ {
 		assertTrue(a.isValid());
 	}
 	
-	@Test
+	//@Test
 	public void test4() {
 		FASTQ a = new FASTQ();
 		a.setFile1("/Users/cgillies/Documents/workspace-sts-3.6.1.RELEASE/FluidigmAlignmentVariantCalling/pairedEndTestData/446840_S1_L001_R1_001.fastq.gz");
