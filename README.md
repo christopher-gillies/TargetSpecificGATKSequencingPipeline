@@ -188,7 +188,7 @@ cd FluidigmTestData
 ls *.gz | perl -F"_" -lane 'use Cwd; my $dir = Cwd::getcwd(); print "$F[0]\t$dir/$_"' > fastq.list.txt
 ```
 
-# How do I used the trimming pipeline?
+# How do I use the adapter trimming pipeline?
 ```
 export OUT_DIR=~/FluidigmTestData/align
 export FASTQ_FILE_LIST=~/FluidigmTestData/fastq.list.txt
