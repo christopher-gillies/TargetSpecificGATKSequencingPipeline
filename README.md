@@ -5,6 +5,7 @@ This package takes FASTQ files and produces a filtered VCF file
 * This has been tested on Ubuntu 14.04.3
 * Since this is a pipeline that utilizes many other programs there are many dependencies. 
 * I have tried to outline the steps to installing all the necessary dependencies from a fresh default Ubuntu 14.04.04 installation.
+
 # Install dependencies
 
 ### git
