@@ -190,7 +190,7 @@ ls *.gz | perl -F"_" -lane 'use Cwd; my $dir = Cwd::getcwd(); print "$F[0]\t$dir
 
 # How do I use the adapter trimming pipeline?
 ```
-export OUT_DIR=~/FluidigmTestData/align
+export OUT_DIR=~/FluidigmTestData/trim
 export FASTQ_FILE_LIST=~/FluidigmTestData/fastq.list.txt
 export PIPELINE=~/sequencing_programs/TargetSpecificGATKSequencingPipeline-0.1.jar
 export CONF=~/sequencing_programs/ubuntu.application.properties
@@ -198,6 +198,37 @@ mkdir $OUT_DIR
 java -jar $PIPELINE --conf $CONF --command trim --tspl 20 --minAdapterOverlap 7 \
 --adapter1 AGACCAAGTCTCTGCTACCGTA --adapter2 TGTAGAACCATGTCGTCAGTGT --maxErr 0.05 \
 --output $OUT_DIR --fastqFiles $FASTQ_FILE_LIST
+cd $OUT_DIR
+# 2 is the number of jobs to run
+make -j 2
+```
+
+# How do I use alignment pipeline?
+## Create gene list
+```
+export OUT_DIR=~/FluidigmTestData/align
+export PIPELINE=~/sequencing_programs/TargetSpecificGATKSequencingPipeline-0.1.jar
+export CONF=~/sequencing_programs/ubuntu.application.properties
+mkdir $OUT_DIR
+export GENES="INF2
+NPHS2
+NPHS1
+WT1
+"
+export GENES_STR=$(echo $GENES | perl -lane 'print join(",",@F)')
+java -jar $PIPELINE --command makeLocations --conf $CONF \
+--output $OUT_DIR/genes.intervals \
+--genes "$GENES_STR"
+```
+* This may take a couple minutes because it is going to scan through all elements in genecode
+
+```
+export OUT_DIR=~/FluidigmTestData/align
+export FASTQ_FILE_LIST=~/FluidigmTestData/trim/fastq.list.txt
+export PIPELINE=~/sequencing_programs/TargetSpecificGATKSequencingPipeline-0.1.jar
+export CONF=~/sequencing_programs/ubuntu.application.properties
+mkdir $OUT_DIR
+java -jar $PIPELINE --command align --output $OUT_DIR --fastqFiles $FASTQ_FILE_LIST --primerLocations $OUT_DIR/genes.intervals --conf $CONF
 cd $OUT_DIR
 # 2 is the number of jobs to run
 make -j 2
