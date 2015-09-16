@@ -227,7 +227,6 @@ export OUT_DIR=~/FluidigmTestData/align
 export FASTQ_FILE_LIST=~/FluidigmTestData/trim/fastq.list.txt
 export PIPELINE=~/sequencing_programs/TargetSpecificGATKSequencingPipeline-0.1.jar
 export CONF=~/sequencing_programs/ubuntu.application.properties
-mkdir $OUT_DIR
 java -jar $PIPELINE --command align --output $OUT_DIR --fastqFiles $FASTQ_FILE_LIST --primerLocations $OUT_DIR/genes.intervals --conf $CONF
 cd $OUT_DIR
 # 2 is the number of jobs to run
