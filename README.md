@@ -147,16 +147,16 @@ export JAVA_HOME=/usr/lib/jvm/java-6-openjdk-amd64/
 cd ~/sequencing_programs/
 git clone https://github.com/christopher-gillies/TargetSpecificGATKSequencingPipeline.git
 
-mvn install:install-file -Dfile=./lib/picard-1.107.jar -DgroupId=net.sf.picard \
+mvn clean install:install-file -Dfile=./lib/picard-1.107.jar -DgroupId=net.sf.picard \
     -DartifactId=picard -Dversion=1.107 -Dpackaging=jar
 
-mvn install:install-file -Dfile=./lib/sam-1.107.jar -DgroupId=net.sf.samtools \
+mvn clean install:install-file -Dfile=./lib/sam-1.107.jar -DgroupId=net.sf.samtools \
     -DartifactId=sam -Dversion=1.107 -Dpackaging=jar
 
-mvn install:install-file -Dfile=./lib/tribble-1.107.jar -DgroupId=net.sf.samtools \
-    -DartifactId=sam -Dversion=1.107 -Dpackaging=jar
+mvn clean install:install-file -Dfile=./lib/tribble-1.107.jar -DgroupId=org.broad.tribble \
+    -DartifactId=tribble -Dversion=1.107 -Dpackaging=jar
 
-mvn install:install-file -Dfile=./lib/VCFAnalysisTools-1.03.jar -DgroupId=org.kidneyomics \
+mvn clean install:install-file -Dfile=./lib/VCFAnalysisTools-1.03.jar -DgroupId=org.kidneyomics \
     -DartifactId=VCFAnalysisTools -Dversion=1.03 -Dpackaging=jar
     
 mvn package
