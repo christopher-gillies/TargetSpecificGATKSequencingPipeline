@@ -115,7 +115,10 @@ wget -c -r --no-parent --reject "index.html*" \
 ```
 
 # Use Release version of TargetSpecificGATKSequencingPipeline
-
+```
+cd ~/sequencing_programs
+wget https://github.com/christopher-gillies/TargetSpecificGATKSequencingPipeline/blob/master/release/TargetSpecificGATKSequencingPipeline-0.1.jar
+```
 
 
 # Use Source version of TargetSpecificGATKSequencingPipeline
