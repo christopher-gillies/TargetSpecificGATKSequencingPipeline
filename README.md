@@ -138,15 +138,18 @@ export PIPELINE=~/sequencing_programs/TargetSpecificGATKSequencingPipeline-0.1.j
 export CONF=~/sequencing_programs/ubuntu.application.properties
 java -jar $PIPELINE --conf $CONF --help
 ```
+* The program successfully started up if the help menu is displayed
 
 
 # Use Source version of TargetSpecificGATKSequencingPipeline
-
+* Clone repository
 ```
 export JAVA_HOME=/usr/lib/jvm/java-6-openjdk-amd64/
 cd ~/sequencing_programs/
 git clone https://github.com/christopher-gillies/TargetSpecificGATKSequencingPipeline.git
-
+```
+* Install maven dependencies in lib folder
+```
 mvn install:install-file -Dfile=./lib/picard-1.107.jar -DgroupId=net.sf.picard -DartifactId=picard -Dversion=1.107 -Dpackaging=jar
 
 mvn install:install-file -Dfile=./lib/sam-1.107.jar -DgroupId=net.sf.samtools -DartifactId=sam -Dversion=1.107 -Dpackaging=jar
@@ -156,8 +159,25 @@ mvn install:install-file -Dfile=./lib/tribble-1.107.jar -DgroupId=org.broad.trib
 
 mvn install:install-file -Dfile=./lib/VCFAnalysisTools-1.03.jar -DgroupId=org.kidneyomics \
     -DartifactId=VCFAnalysisTools -Dversion=1.03 -Dpackaging=jar
-    
+```
+* Build the package
+```
+cd ~/sequencing_programs/TargetSpecificGATKSequencingPipeline/
 mvn package
 ```
+* Setup configureation
+```
+cat ~/sequencing_programs/TargetSpecificGATKSequencingPipeline/example.ubuntu.application.properties | \
+perl -lane '$_ =~ s/cgillies/YOUR_USERNAME/; print $_' > \
+~/sequencing_programs/TargetSpecificGATKSequencingPipeline/ubuntu.application.properties
+```
+
+* Test that the pipeline runs
+```
+export PIPELINE=~/sequencing_programs/TargetSpecificGATKSequencingPipeline/target/TargetSpecificGATKSequencingPipeline-0.1.jar
+export CONF=~/sequencing_programs/TargetSpecificGATKSequencingPipeline/ubuntu.application.properties
+java -jar $PIPELINE --conf $CONF --help
+```
+* The program successfully started up if the help menu is displayed
 
 
