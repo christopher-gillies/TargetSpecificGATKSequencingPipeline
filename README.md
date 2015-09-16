@@ -121,7 +121,8 @@ wget https://github.com/christopher-gillies/TargetSpecificGATKSequencingPipeline
 wget https://raw.githubusercontent.com/christopher-gillies/TargetSpecificGATKSequencingPipeline/master/example.ubuntu.application.properties
 ```
 
-*Change the username from cgillies to YOUR_USERNAME in the example.ubuntu.application.properties file
+* Change the username from cgillies to YOUR_USERNAME in the example.ubuntu.application.properties file
+
 ```
 cat ~/sequencing_programs/example.ubuntu.application.properties | \
 perl -lane '$_ =~ s/cgillies/YOUR_USERNAME/; print $_' > \
