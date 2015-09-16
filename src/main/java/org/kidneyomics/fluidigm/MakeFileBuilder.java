@@ -64,7 +64,7 @@ public class MakeFileBuilder implements CommandWriter {
 		bwaIndexEntry.setTarget(reference + ".sa");
 		
 		
-		makefile.addMakeEntry(bwaIndexEntry);
+		// makefile.addMakeEntry(bwaIndexEntry);
 		
 		MakeEntry bwaIndexComplete = new MakeEntry();
 		bwaIndexComplete.setComment("BWA indexing complete");
@@ -94,7 +94,7 @@ public class MakeFileBuilder implements CommandWriter {
 		fastaIndexEntry.addCommand(fastaIndex.render()).addCommand("touch $@");
 		fastaIndexEntry.addDependency(new MakeEntry().setTarget(reference));
 		
-		makefile.addMakeEntry(fastaIndexEntry);
+		//makefile.addMakeEntry(fastaIndexEntry);
 		
 		MakeEntry fastaIndexComplete = new MakeEntry();
 		fastaIndexComplete.setComment("samtools indexing complete");
@@ -126,7 +126,7 @@ public class MakeFileBuilder implements CommandWriter {
 		fastaDictEntry.setTarget(referenceDict);
 		fastaDictEntry.addCommand(fastaDict.render());
 		
-		makefile.addMakeEntry(fastaDictEntry);
+		//makefile.addMakeEntry(fastaDictEntry);
 		
 		
 		MakeEntry fastaDictComplete = new MakeEntry();
