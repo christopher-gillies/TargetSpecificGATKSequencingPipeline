@@ -15,7 +15,8 @@ sudo apt-get install git
 
 ### java
 ```
-sudo apt-get install openjdk-6-jre-headless
+sudo apt-get install openjdk-6-jre
+sudo apt-get install openjdk-6-jdk
 ```
 
 ### maven if you want to build source
@@ -115,12 +116,50 @@ wget -c -r --no-parent --reject "index.html*" \
 ```
 
 # Use Release version of TargetSpecificGATKSequencingPipeline
+```
+cd ~/sequencing_programs
+wget https://github.com/christopher-gillies/TargetSpecificGATKSequencingPipeline/raw/master/release/TargetSpecificGATKSequencingPipeline-0.1.jar
+wget https://raw.githubusercontent.com/christopher-gillies/TargetSpecificGATKSequencingPipeline/master/example.ubuntu.application.properties
+```
 
+* Change the username from cgillies to YOUR_USERNAME in the example.ubuntu.application.properties file
+
+```
+cat ~/sequencing_programs/example.ubuntu.application.properties | \
+perl -lane '$_ =~ s/cgillies/YOUR_USERNAME/; print $_' > \
+~/sequencing_programs/ubuntu.application.properties
+```
+
+* Make sure the paths are still valid for the files in the ubuntu.application.properties. They should be hopefully be if you have followed this tutorial exactly.
+
+* Test that the pipeline runs
+```
+export PIPELINE=~/sequencing_programs/TargetSpecificGATKSequencingPipeline-0.1.jar
+export CONF=~/sequencing_programs/ubuntu.application.properties
+java -jar $PIPELINE --conf $CONF --help
+```
 
 
 # Use Source version of TargetSpecificGATKSequencingPipeline
 
-###To build you will need to install VCFAnalysisTools jar into your local maven repository
-export LIB=./lib/VCFAnalysisTools-1.03.jar
-mvn install:install-file -Dfile=$LIB -DgroupId=org.kidneyomics \
+```
+export JAVA_HOME=/usr/lib/jvm/java-6-openjdk-amd64/
+cd ~/sequencing_programs/
+git clone https://github.com/christopher-gillies/TargetSpecificGATKSequencingPipeline.git
+
+mvn install:install-file -Dfile=./lib/picard-1.107.jar -DgroupId=net.sf.picard \
+    -DartifactId=picard -Dversion=1.107 -Dpackaging=jar
+
+mvn install:install-file -Dfile=./lib/sam-1.107.jar -DgroupId=net.sf.samtools \
+    -DartifactId=sam -Dversion=1.107 -Dpackaging=jar
+
+mvn install:install-file -Dfile=./lib/tribble-1.107.jar -DgroupId=net.sf.samtools \
+    -DartifactId=sam -Dversion=1.107 -Dpackaging=jar
+
+mvn install:install-file -Dfile=./lib/VCFAnalysisTools-1.03.jar -DgroupId=org.kidneyomics \
     -DartifactId=VCFAnalysisTools -Dversion=1.03 -Dpackaging=jar
+    
+mvn package
+```
+
+
