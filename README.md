@@ -115,7 +115,7 @@ wget -c -r --no-parent --reject "index.html*" \
 "http://glom.sph.umich.edu/TargetedSequencingPipelineReferences/" -nH --cut-dirs=1
 ```
 
-# Use Release version of TargetSpecificGATKSequencingPipeline
+# If you want to use Release version of TargetSpecificGATKSequencingPipeline then follow the steps below
 ```
 cd ~/sequencing_programs
 wget https://github.com/christopher-gillies/TargetSpecificGATKSequencingPipeline/raw/master/release/TargetSpecificGATKSequencingPipeline-0.1.jar
@@ -141,7 +141,7 @@ java -jar $PIPELINE --conf $CONF --help
 * The program successfully started up if the help menu is displayed
 
 
-# Use Source version of TargetSpecificGATKSequencingPipeline
+# If you wan to use source version of TargetSpecificGATKSequencingPipeline then follow the steps below
 * Clone repository
 ```
 export JAVA_HOME=/usr/lib/jvm/java-6-openjdk-amd64/
