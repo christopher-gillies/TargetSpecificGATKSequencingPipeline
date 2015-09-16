@@ -2,8 +2,9 @@
 This package takes FASTQ files and produces a filtered VCF file
 
 # Setup 
-* this has been tested on Ubuntu 14.04.3
-
+* This has been tested on Ubuntu 14.04.3
+* Since this is a pipeline that utilizes many other programs there are many dependencies. 
+* I have tried to outline the steps to installing all the necessary dependencies from a fresh default Ubuntu 14.04.04 installation.
 # Install dependencies
 
 ### git
@@ -89,16 +90,27 @@ make
 ```
 
 ### If you want to use the svm filter
+You will need to install R. Unfortunately, Ubuntu 14.04 has an old version of R so we have to install it a non-standard way
 ```
-sudo apt-get install r-core-base
-Rscript -e 'install.packages("ggplot2",rpos="http://cran.wustl.edu/")' 
+cd ~/
+sudo apt-get install liblapack3
+sudo apt-get install libgfortran3
+sudo apt-get install libblas3
+sudo apt-get install gfortran
+wget http://cran.es.r-project.org/bin/linux/ubuntu/trusty/r-base-core_3.2.2-1trusty0_amd64.deb
+sudo dpkg -i r-base-core_3.2.2-1trusty0_amd64.deb
+sudp Rscript -e 'install.packages("ggplot2",repos="http://cran.wustl.edu/")' 
+sudo Rscript -e 'install.packages("gridExtra",repos="http://cran.wustl.edu/")' 
+sudo Rscript -e 'install.packages("e1071",repos="http://cran.wustl.edu/")' 
+sudo Rscript -e 'source("https://bioconductor.org/biocLite.R"); biocLite("impute")' 
 ```
 
 # Download Reference files
 * note that there are about 20gb in reference files
 ```
 mkdir ~/sequencing_reference_files
-wget -r --no-parent --reject "index.html*" http://glom.sph.umich.edu/TargetedSequencingPipelineReferences/
+wget -c -r --no-parent --reject "index.html*" \
+"http://glom.sph.umich.edu/TargetedSequencingPipelineReferences/" -nH --cut-dirs=1
 ```
 
 # Use Release version of TargetSpecificGATKSequencingPipeline
