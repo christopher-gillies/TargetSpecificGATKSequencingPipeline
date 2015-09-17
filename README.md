@@ -14,7 +14,7 @@ sudo apt-get install git
 ```
 
 ### java
-* GATK does not appear to work very well with openjdk so install oracle java
+* GATK does not support openjdk so you should install java from oracle
 * http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html
 * 
 ```
@@ -78,6 +78,11 @@ git clone git://github.com/samtools/samtools.git
 cd samtools
 ```
 
+* Install tabix
+```
+sudo apt-get install tabix
+```
+
 * bwa
 ```
 cd ~/sequencing_programs
@@ -122,12 +127,24 @@ sudo Rscript -e 'source("https://bioconductor.org/biocLite.R"); biocLite("impute
 ```
 
 # Download Reference files
-* note that there are about 20gb in reference files
+* Note that there are about 20gb in reference files
 ```
 mkdir ~/sequencing_reference_files
 wget -c -r --no-parent --reject "index.html*" \
 "http://glom.sph.umich.edu/TargetedSequencingPipelineReferences/" -nH --cut-dirs=1
 ```
+* Note you should reindex the tabix files just incase the tbi file was copied before the vcf. This is recommended because GATK can throw error messages when the tbi file is out of date.
+```
+cd ~/sequencing_reference_files
+tabix -f -pvcf Mills_and_1000G_gold_standard.indels.hg19.sites.relabel.vcf.gz
+tabix -f -pvcf 1000G_phase1.indels.hg19.sites.relabel.vcf.gz
+tabix -f -pvcf 1000G_omni2.5.hg19.sites.relabel.vcf.gz
+tabix -f -pvcf ALL.phase3.combined.sites.unfiltered.vcf.gz
+tabix -f -pvcf dbsnp_138.hg19.relabel.vcf.gz
+tabix -f -pvcf ExAC.r0.3.sites.vep.vcf.gz
+tabix -f -pvcf hapmap_3.3.hg19.sites.relabel.vcf.gz
+```
+
 
 # If you want to use Release version of TargetSpecificGATKSequencingPipeline then follow the steps below
 ```
