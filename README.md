@@ -1,4 +1,5 @@
 # TargetSpecificGATKSequencingPipeline
+* Please visit Sampson lab at http://kidneyomics.org
 * This package takes FASTQ files and produces a filtered VCF file
 * This package implements GATK's best practices for GATK version 3.4 with the exection of marking duplicates and variant filtering
 * This package uses a custom Support Vector Machine for filtering variants using Exac and 1000G for determining positive and negative training examples
