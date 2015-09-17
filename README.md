@@ -281,3 +281,13 @@ make -j2
 ```
 
 # How do I perform variant quality filtering?
+```
+export DATA_DIR=~/FluidigmTestData/
+export OUT_DIR=$DATA_DIR/svm_filter/
+export PIPELINE=~/sequencing_programs/TargetSpecificGATKSequencingPipeline-0.1.jar
+export VCF=$DATA_DIR/calls/merged.vcf
+export CONF=~/sequencing_programs/ubuntu.application.properties
+mkdir "$OUT_DIR"
+java -Xmx2048m -jar $PIPELINE --command svmFilter --output "$OUT_DIR" --vcf $VCF --conf $CONF
+
+```
