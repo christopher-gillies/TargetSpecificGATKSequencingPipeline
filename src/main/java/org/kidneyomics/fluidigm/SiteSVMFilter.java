@@ -34,6 +34,11 @@ public class SiteSVMFilter implements Filter {
 	private String snpFilter;
 	private String indelFilter;
 	
+	/**
+	 * apply svm filter to snps only keep all indels
+	 */
+	private boolean snpsOnly = false;
+	
 	ApplicationProperties applicationProperties;
 	
 	@Override
@@ -42,7 +47,10 @@ public class SiteSVMFilter implements Filter {
 		VCFFile vfile = new VCFFile();
 		
 		HashMap<String,SVMResult> snpResults = parseResults(snpFilter);
-		HashMap<String,SVMResult> indelResults = parseResults(indelFilter);
+		HashMap<String,SVMResult> indelResults = null;
+		if(!snpsOnly) {
+			indelResults = parseResults(indelFilter);
+		}
 		
 		
 		VCFLineIterator iter = vfile.iterator(vcf);
@@ -78,11 +86,21 @@ public class SiteSVMFilter implements Filter {
 				}
 				keep = svmRes.isKeep();
 			} else {
-				svmRes = indelResults.get(vline.getId("_"));
-				if(svmRes == null) {
-					throw new Exception(vline.getId("_") + " not found in results!");
+				if(!snpsOnly) {
+					svmRes = indelResults.get(vline.getId("_"));
+					if(svmRes == null) {
+						throw new Exception(vline.getId("_") + " not found in results!");
+					}
+					keep = svmRes.isKeep();
+				} else {
+					svmRes = new SVMResult();
+					svmRes.setProbabilityOfCorrect(1f);
+					svmRes.setPosterior(1f);
+					svmRes.setPass1kg("UNKNOWN");
+					svmRes.setPassExac("UNKNOWN");
+					svmRes.setConsensus("UNKNOWN");
+					keep = true;
 				}
-				keep = svmRes.isKeep();
 			}
 			
 			if(!keep) {
@@ -144,6 +162,15 @@ public class SiteSVMFilter implements Filter {
 	public void setApplicationProperties(ApplicationProperties applicationProperties) {
 		this.applicationProperties = applicationProperties;
 	}
+
+	public boolean isSnpsOnly() {
+		return snpsOnly;
+	}
+
+	public void setSnpsOnly(boolean snpsOnly) {
+		this.snpsOnly = snpsOnly;
+	}
+	
 	
 
 }

@@ -90,6 +90,8 @@ public class MakePipeline {
 	
 	private boolean outMatrix = false;
 	
+	private boolean snpsOnly = false;
+	
 	private boolean unifiedGenotyper = false;
 	
 	private String sitesToKeep;
@@ -174,6 +176,19 @@ public class MakePipeline {
 		this.conf = conf;
 	}
 
+	
+
+
+
+	public boolean isSnpsOnly() {
+		return snpsOnly;
+	}
+
+	public void setSnpsOnly(boolean snpsOnly) {
+		this.snpsOnly = snpsOnly;
+	}
+
+
 
 
 
@@ -188,7 +203,7 @@ public class MakePipeline {
 	
 	public static void main(String[] args) throws Exception {
 		
-		logger.info("Fluidigm Pipeline Maker");
+		logger.info("Pipeline Maker");
 		ApplicationContext context = new ClassPathXmlApplicationContext("spring/applicationContext.xml");
 		MakePipeline mp = context.getBean(MakePipeline.class); 
 		getOptions(args, mp);
@@ -385,6 +400,7 @@ public class MakePipeline {
 		    siteSvmFilter.setSnpFilter(mp.getOutput() + "/svm.snp.predictions.txt");
 		    siteSvmFilter.setIndelFilter(mp.getOutput() + "/svm.indel.predictions.txt");
 		    siteSvmFilter.setVcf(mp.getVcf());
+		    siteSvmFilter.setSnpsOnly(mp.isSnpsOnly());
 		    siteSvmFilter.filter(mp.getOutput() + "/svm.filtered.vcf");
 			break;
 		}
@@ -638,6 +654,7 @@ public class MakePipeline {
 		options.addOption("runVariantLevelQC",false,"Perform QC at the variant level and the site level");
 		options.addOption("bed",false,"output a bed file instead of an interval file for makeLocations");
 		options.addOption("unifiedGenotyper",false,"Use UnifiedGenotyper instead of HaplotypeCaller");
+		options.addOption("snpsOnly",false,"Only apply svm filter to snps allow all indels to pass");
 		options.addOption("outMatrix",false,"output a matrix instead of VCF for site subset");
 		options.addOption("command",true,"align, call, trim, makeLocations, variantQc, hardFilter, hardGenotypeFilter, normalize, reheader, selectSites, selectSitesByInterval, selectSamples, svmFilter, sampleCallRate [REQUIRED]");
 		options.addOption("conf",true,"the configuration file or properties file");
@@ -685,7 +702,7 @@ public class MakePipeline {
 		options.addOption("cohortSize",true,"The size of the cohort to merge in the CombineGVCFs step (Default: 20)");
 		
 		
-		options.addOption("vcf",true,"The vcf file that you want to apply filtering too");
+		options.addOption("vcf",true,"The vcf file that you want to apply filtering to");
 		
 		mp.setOptions(options);
 		
@@ -708,6 +725,12 @@ public class MakePipeline {
 		
 		if(cmd.hasOption("keepPassSitesOnly")) {
 			mp.setKeepPassOnly(true);
+		}
+		
+		if(cmd.hasOption("snpsOnly")) {
+			mp.setSnpsOnly(true);
+		} else {
+			mp.setSnpsOnly(false);
 		}
 		
 		if(cmd.hasOption("unifiedGenotyper")) {
@@ -894,7 +917,7 @@ public class MakePipeline {
 	
 	public static void printHelp(Options options) {
 		HelpFormatter formatter = new HelpFormatter();
-		formatter.printHelp( "Make Fluidigm Pipeline", options );
+		formatter.printHelp( "Target Specific GATK Sequencing Pipeline", options );
 		System.exit(0);
 	}
 	
