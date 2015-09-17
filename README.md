@@ -175,7 +175,7 @@ java -jar $PIPELINE --conf $CONF --help
 # If you wan to use source version of TargetSpecificGATKSequencingPipeline then follow the steps below
 * Clone repository
 ```
-export JAVA_HOME=/usr/lib/jvm/java-6-openjdk-amd64/
+export JAVA_HOME=/usr/lib/jvm/jdk1.7.0_79/
 cd ~/sequencing_programs/
 git clone https://github.com/christopher-gillies/TargetSpecificGATKSequencingPipeline.git
 ```
