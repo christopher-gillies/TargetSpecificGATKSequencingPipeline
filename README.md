@@ -1,6 +1,7 @@
 # TargetSpecificGATKSequencingPipeline
-This package takes FASTQ files and produces a filtered VCF file
-
+* This package takes FASTQ files and produces a filtered VCF file
+* This package implements GATK's best practices for GATK version 3.4 with the exection of marking duplicates and variant filtering
+* This package uses a custom Support Vector Machine for filtering variants using Exac and 1000G for determining positive and negative training examples
 # Setup 
 * This has been tested on Ubuntu 14.04.3
 * You will need at least 8gb of ram to run this
