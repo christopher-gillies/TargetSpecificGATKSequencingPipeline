@@ -265,4 +265,18 @@ cd $OUT_DIR
 # 1 is the number of jobs to run
 make -j 1
 ```
+# How do I perform variant calling?
 
+```
+export PIPELINE=~/sequencing_programs/TargetSpecificGATKSequencingPipeline-0.1.jar
+export OUT=~/FluidigmTestData/calls/
+export BAMS_IN=~/FluidigmTestData/align/bam.list.txt
+export REGIONS=~/FluidigmTestData/align/genes.intervals
+export CONF=~/sequencing_programs/ubuntu.application.properties
+mkdir $OUT
+java -jar $PIPELINE --command call --output $OUT --bamFiles $BAMS_IN --primerLocations $REGIONS --unifiedGenotyper --numGatkThreads 1 --xmx 4g --conf $CONF
+cd $OUT
+make -j2
+```
+
+# How do I perform variant quality filtering?
