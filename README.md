@@ -176,7 +176,7 @@ java -jar $PIPELINE --conf $CONF --help
 * The program successfully started up if the help menu is displayed
 
 
-# If you wan to use source version of TargetSpecificGATKSequencingPipeline then follow the steps below
+# If you want to use source version of TargetSpecificGATKSequencingPipeline then follow the steps below
 * Clone repository
 ```
 export JAVA_HOME=/usr/lib/jvm/jdk1.7.0_79/
@@ -200,7 +200,7 @@ mvn install:install-file -Dfile=./lib/VCFAnalysisTools-1.03.jar -DgroupId=org.ki
 cd ~/sequencing_programs/TargetSpecificGATKSequencingPipeline/
 mvn package
 ```
-* Setup configureation
+* Setup configuration
 ```
 cat ~/sequencing_programs/TargetSpecificGATKSequencingPipeline/example.ubuntu.application.properties | \
 perl -lane '$_ =~ s/cgillies/YOUR_USERNAME/; print $_' > \
