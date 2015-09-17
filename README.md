@@ -3,8 +3,10 @@ This package takes FASTQ files and produces a filtered VCF file
 
 # Setup 
 * This has been tested on Ubuntu 14.04.3
+* You will need at least 8gb of ram to run this
 * Since this is a pipeline that utilizes many other programs there are many dependencies. 
 * I have tried to outline the steps to installing all the necessary dependencies from a fresh default Ubuntu 14.04.04 installation.
+* This pipeline should work on most Linux distributions and Mac provided that you install the dependencies
 
 # Install dependencies
 
