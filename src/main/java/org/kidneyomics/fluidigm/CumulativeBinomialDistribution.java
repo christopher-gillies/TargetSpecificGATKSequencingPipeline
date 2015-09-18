@@ -66,7 +66,15 @@ public class CumulativeBinomialDistribution {
 		 */
 		int xupper = -1;
 		int xlower = -1;
-		if(x < distribution.getNumberOfTrials() / 2) {
+		/*
+		 * fixed bug when n = 3 by changing < to <=
+		 * x = 1
+		 * 1 < 3/2 == 1 < 1 b/c of integer
+		 * this is false so
+		 * upper would equal x and lower would be 3 - x
+		 * upper = 1 and lower would be 2
+		 */
+		if(x <= distribution.getNumberOfTrials() / 2) {
 			xupper = distribution.getNumberOfTrials() - x;
 			xlower = x;
 		} else {

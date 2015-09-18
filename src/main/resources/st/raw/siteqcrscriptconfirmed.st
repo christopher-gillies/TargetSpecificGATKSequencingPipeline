@@ -115,6 +115,52 @@ ggplot(indels, aes(x=QD,fill=FILTER)) + geom_bar(position="dodge")
 dev.off()
 
 
+#NORMALIZED_ALLELE_DOSAGE_TEST
+
+pdf("nad.snps.dbsnp.pdf")
+ggplot(snps, aes(x=NORMALIZED_ALLELE_DOSAGE_TEST,fill=IN_DBSNP)) + geom_bar(position="dodge")
+dev.off()
+
+pdf("nad.snps.filter.pdf")
+ggplot(snps, aes(x=NORMALIZED_ALLELE_DOSAGE_TEST,fill=FILTER)) + geom_bar(position="dodge")
+dev.off()
+
+pdf("nad.snps.confirmed.pdf")
+ggplot(snps, aes(x=NORMALIZED_ALLELE_DOSAGE_TEST,fill=CONFIRMED)) + geom_bar(position="dodge")
+dev.off()
+
+
+pdf("nad.indels.dbsnp.pdf")
+ggplot(indels, aes(x=NORMALIZED_ALLELE_DOSAGE_TEST,fill=IN_DBSNP_OR_GOLD_INDEL)) + geom_bar(position="dodge")
+dev.off()
+
+pdf("nad.indels.filter.pdf")
+ggplot(indels, aes(x=NORMALIZED_ALLELE_DOSAGE_TEST,fill=FILTER)) + geom_bar(position="dodge")
+dev.off()
+
+#MEAN_ALLELE_BALANCE
+
+pdf("mean.allele.balance.snps.dbsnp.pdf")
+ggplot(snps, aes(x=MEAN_ALLELE_BALANCE,fill=IN_DBSNP)) + geom_bar(position="dodge")
+dev.off()
+
+pdf("mean.allele.balance.snps.filter.pdf")
+ggplot(snps, aes(x=MEAN_ALLELE_BALANCE,fill=FILTER)) + geom_bar(position="dodge")
+dev.off()
+
+pdf("mean.allele.balance.snps.confirmed.pdf")
+ggplot(snps, aes(x=MEAN_ALLELE_BALANCE,fill=CONFIRMED)) + geom_bar(position="dodge")
+dev.off()
+
+
+pdf("mean.allele.balance.indels.dbsnp.pdf")
+ggplot(indels, aes(x=MEAN_ALLELE_BALANCE,fill=IN_DBSNP_OR_GOLD_INDEL)) + geom_bar(position="dodge")
+dev.off()
+
+pdf("mean.allele.balance.indels.filter.pdf")
+ggplot(indels, aes(x=MEAN_ALLELE_BALANCE,fill=FILTER)) + geom_bar(position="dodge")
+dev.off()
+
 #RP_RANKSUM
 
 pdf("rp.snps.dbsnp.pdf")

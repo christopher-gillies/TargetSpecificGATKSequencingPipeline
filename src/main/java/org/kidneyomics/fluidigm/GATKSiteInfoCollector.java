@@ -138,7 +138,7 @@ public class GATKSiteInfoCollector implements InfoCollector {
 		FileWriter fw = new FileWriter(out);
 		BufferedWriter sb = new BufferedWriter(fw);
 		
-		sb.append("CHR_POS\tKEY\tIS_SNP\tIN_DBSNP\tIN_HAPMAP\tGOLD_INDEL\tIN_DBSNP_OR_GOLD_INDEL\tPASS_EXAC\tVQSR_LOD\tPASS_1KG\tSVM_SCORE\tCONSENSUS\tPRIOR_TRUE\tPRIOR_FALSE\tFILTER\tAC\tAN\tDEPTH\tMEAN_ALT_DEPTH\tMEAN_ALLELE_BALANCE\tALLELE_DOSAGE_TEST\tQD\tFS\tMQ\tMQ_RANKSUM\tCLIPPING_RANKSUM\tRP_RANKSUM\tBASEQ_RANKSUM\tHAPLOTYPE_SCORE\tQUALITY\tCALLRATE\tSOR\tINBREEDING\n");
+		sb.append("CHR_POS\tKEY\tIS_SNP\tIN_DBSNP\tIN_HAPMAP\tGOLD_INDEL\tIN_DBSNP_OR_GOLD_INDEL\tPASS_EXAC\tVQSR_LOD\tPASS_1KG\tSVM_SCORE\tCONSENSUS\tPRIOR_TRUE\tPRIOR_FALSE\tFILTER\tAC\tAN\tDEPTH\tMEAN_ALT_DEPTH\tMEAN_ALLELE_BALANCE\tALLELE_DOSAGE_TEST\tNORMALIZED_ALLELE_DOSAGE_TEST\tQD\tFS\tMQ\tMQ_RANKSUM\tCLIPPING_RANKSUM\tRP_RANKSUM\tBASEQ_RANKSUM\tHAPLOTYPE_SCORE\tQUALITY\tCALLRATE\tSOR\tINBREEDING\n");
 		while(iter.hasNext()) {
 			VCFLine vline = iter.next();
 			logger.info(vline.getId(":"));
@@ -273,11 +273,24 @@ public class GATKSiteInfoCollector implements InfoCollector {
 			String alleleBalance = "NA";
 			String meanAltDepth = "NA";
 			String alleleDosagePhred = "NA";
+			String normalizedAlleleDosagePhred = "NA";
 			if(hetCount > 0) {
 				alleleBalance = Float.toString(altDepth / (float) (altDepth + refDepth));
 				meanAltDepth = Float.toString(altDepth / ((float) hetCount));
 				
-				alleleDosagePhred = Double.toString(AlleleDosageCalculator.getPhredScaledPvalue(Math.round(refDepth / (float) hetCount), Math.round(altDepth / (float) hetCount)));
+				double res = AlleleDosageCalculator.getPhredScaledPvalue(Math.round(refDepth / (float) hetCount), Math.round(altDepth / (float) hetCount));
+				alleleDosagePhred = Double.toString(res);
+				
+				double normalizedRes = res / Math.round(altDepth / (float) hetCount);
+				normalizedAlleleDosagePhred = Double.toString(normalizedRes);
+				/*
+				if(res < 0.0) {
+					logger.info("Allele dosage less test than 0! = " + res + "\t" + vline.getId("_") + "\tNumber of hets: " + hetCount +  
+							"\tRef depth: " + refDepth + "\tNormalized ref depth: " + Math.round(refDepth / (float) hetCount) +
+							"\tAlt depth: " + altDepth + "\tNormalized alt depth: " + Math.round(altDepth / (float) hetCount)
+							);
+				}
+				*/
 			}
 			
 			double callrate = nonMissingCount / ((double) gts.size());
@@ -323,8 +336,8 @@ public class GATKSiteInfoCollector implements InfoCollector {
 				if(!meanAltDepth.equals("NA") && Double.parseDouble(meanAltDepth) < 10) {
 					failCount++;
 				}
-				
-				if(!alleleDosagePhred.equals("NA") && Double.parseDouble(alleleDosagePhred) > 300) {
+
+				if(!normalizedAlleleDosagePhred.equals("NA") && Double.parseDouble(normalizedAlleleDosagePhred) > 5) {
 					failCount++;
 				}
 				
@@ -439,7 +452,7 @@ public class GATKSiteInfoCollector implements InfoCollector {
 				
 			} else {
 				logger.info("fail sites " + vline.getId("_") + " QD: " + qd + " FS: " + fs + " ReadPositionRankSum: " + rpRankSum + " CallRate: " + callrate + " MQ: " + mq + " MQRankSum: " + mqRankSum
-						+ " Mean allele balance: " + alleleBalance + " Mean alt depth: " + meanAltDepth + " Allele Dosage Test Phred:" + alleleDosagePhred + " BaseQRankSum: " + baseQRankSum);
+						+ " Mean allele balance: " + alleleBalance + " Mean alt depth: " + meanAltDepth + " Allele Dosage Test Phred:" + alleleDosagePhred + " Normalized Allele Dosage Test Phred:" + normalizedAlleleDosagePhred + " BaseQRankSum: " + baseQRankSum);
 				consensus = "FILTER";
 			}
 			
@@ -531,6 +544,9 @@ public class GATKSiteInfoCollector implements InfoCollector {
 			sb.append("\t");
 			
 			sb.append(alleleDosagePhred);
+			sb.append("\t");
+			
+			sb.append(normalizedAlleleDosagePhred);
 			sb.append("\t");
 			
 			sb.append(qd);

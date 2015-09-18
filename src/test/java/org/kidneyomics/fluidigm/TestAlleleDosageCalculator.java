@@ -19,6 +19,18 @@ public class TestAlleleDosageCalculator {
 	public void test2() {
 		logger.info(AlleleDosageCalculator.getPhredScaledPvalue(1900, 1000));
 	}
+	
+	
+	@Test
+	public void test3() {
+		logger.info(AlleleDosageCalculator.getPhredScaledPvalue(1,1));
+		logger.info(AlleleDosageCalculator.getPValue(1,1));
+	}
 
+	@Test
+	public void test4() {
+		logger.info(AlleleDosageCalculator.getPhredScaledPvalue(1,2));
+		logger.info(AlleleDosageCalculator.getPValue(1,2));
+	}
 
 }

@@ -29,9 +29,6 @@ indels$IN_DBSNP_OR_GOLD_INDEL = factor(indels$IN_DBSNP_OR_GOLD_INDEL,levels=c(0,
 
 indels$CONFIRMED = "UNKNOWN";
 
-snps$ALLELE_DOSAGE_TEST_NORMALIZED = snps$ALLELE_DOSAGE_TEST / snps$MEAN_ALT_DEPTH
-indels$ALLELE_DOSAGE_TEST_NORMALIZED = indels$ALLELE_DOSAGE_TEST / indels$MEAN_ALT_DEPTH
-
 
 ####
 #SNPS
@@ -43,7 +40,7 @@ inv.norm = function(r) {
 	qnorm((rank(r)-.5)/length(r))
 }
 
-tmp = as.matrix(snps[,c("RP_RANKSUM","CALLRATE","QD","MEAN_ALLELE_BALANCE","INBREEDING","HAPLOTYPE_SCORE","MQ_RANKSUM","MQ", "ALLELE_DOSAGE_TEST" , "BASEQ_RANKSUM", "MEAN_ALT_DEPTH","ALLELE_DOSAGE_TEST_NORMALIZED")]);
+tmp = as.matrix(snps[,c("RP_RANKSUM","CALLRATE","QD","MEAN_ALLELE_BALANCE","INBREEDING","HAPLOTYPE_SCORE","MQ_RANKSUM","MQ", "ALLELE_DOSAGE_TEST" , "BASEQ_RANKSUM", "MEAN_ALT_DEPTH","NORMALIZED_ALLELE_DOSAGE_TEST")]);
 
 tmp.invn = apply(tmp,MARGIN=2,FUN=inv.norm)
 
@@ -58,7 +55,7 @@ imputed.values.training = subset(imputed.values, CONSENSUS != "UNKNOWN");
 imputed.values.training$CONSENSUS = factor(imputed.values.training$CONSENSUS,levels=c("FILTER","PASS"),labels=c("FILTER","PASS"))
 
 
-svm.model = svm(CONSENSUS ~ CALLRATE + QD + RP_RANKSUM + MEAN_ALLELE_BALANCE  + INBREEDING + ALLELE_DOSAGE_TEST_NORMALIZED + HAPLOTYPE_SCORE + MQ_RANKSUM  + BASEQ_RANKSUM + MEAN_ALT_DEPTH,data=imputed.values.training,kernel="radial",scale=FALSE,probability=TRUE,cost=1)
+svm.model = svm(CONSENSUS ~ CALLRATE + QD + RP_RANKSUM + MEAN_ALLELE_BALANCE  + INBREEDING + NORMALIZED_ALLELE_DOSAGE_TEST + HAPLOTYPE_SCORE + MQ_RANKSUM  + BASEQ_RANKSUM + MEAN_ALT_DEPTH,data=imputed.values.training,kernel="radial",scale=FALSE,probability=TRUE,cost=1)
 
 pred.snps = predict(svm.model,imputed.values,probability=TRUE);
 snps$P_PASS = attr(pred.snps,"probabilities")[,"PASS"]
@@ -120,7 +117,7 @@ inv.norm = function(r) {
 	qnorm((rank(r)-.5)/length(r))
 }
 
-tmp = as.matrix(indels[,c("RP_RANKSUM","CALLRATE","QD","MEAN_ALLELE_BALANCE","INBREEDING","HAPLOTYPE_SCORE","MQ_RANKSUM","MQ", "ALLELE_DOSAGE_TEST" , "BASEQ_RANKSUM", "MEAN_ALT_DEPTH","ALLELE_DOSAGE_TEST_NORMALIZED")]);
+tmp = as.matrix(indels[,c("RP_RANKSUM","CALLRATE","QD","MEAN_ALLELE_BALANCE","INBREEDING","MQ_RANKSUM","MQ", "ALLELE_DOSAGE_TEST" , "BASEQ_RANKSUM", "MEAN_ALT_DEPTH","NORMALIZED_ALLELE_DOSAGE_TEST")]);
 
 tmp.invn = apply(tmp,MARGIN=2,FUN=inv.norm)
 
@@ -134,7 +131,7 @@ imputed.values.training = subset(imputed.values, CONSENSUS != "UNKNOWN");
 
 imputed.values.training$CONSENSUS = factor(imputed.values.training$CONSENSUS,levels=c("FILTER","PASS"),labels=c("FILTER","PASS"))
 
-svm.model = svm(CONSENSUS ~ CALLRATE + QD + RP_RANKSUM + MEAN_ALLELE_BALANCE  + INBREEDING + ALLELE_DOSAGE_TEST_NORMALIZED + HAPLOTYPE_SCORE + MQ_RANKSUM  + BASEQ_RANKSUM + MEAN_ALT_DEPTH,data=imputed.values.training,kernel="radial",scale=FALSE,probability=TRUE,cost=1)
+svm.model = svm(CONSENSUS ~ CALLRATE + QD + RP_RANKSUM + MEAN_ALLELE_BALANCE  + INBREEDING + NORMALIZED_ALLELE_DOSAGE_TEST  + MQ_RANKSUM  + BASEQ_RANKSUM + MEAN_ALT_DEPTH,data=imputed.values.training,kernel="radial",scale=FALSE,probability=TRUE,cost=1)
 pred.indels = predict(svm.model,imputed.values,probability=TRUE);
 indels$P_PASS = attr(pred.indels,"probabilities")[,"PASS"]
 
