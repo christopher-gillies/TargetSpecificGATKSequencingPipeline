@@ -297,6 +297,7 @@ cd $OUT_DIR
 * The below filter will mark a heterozygote as missing if its allele balance is less than 10% or its genotype quality is less than 40 or if its alternative allele depth is less than 5
 * A homozygote will be filtered if its genotype quality is less than 40 or its alternative allele depth is less than 5
 ```
+export PIPELINE=~/sequencing_programs/TargetSpecificGATKSequencingPipeline-0.1.jar
 export OUT_DIR=$DATA_DIR/svm_filter/
 export VCF="$OUT_DIR"/svm.filtered.vcf
 export OUT_VCF="$OUT_DIR"/svm.filtered.refined.vcf
@@ -332,6 +333,7 @@ java -Xmx2048m -jar $PIPELINE --command hardGenotypeFilter --output "$OUT_VCF" -
 # How do I get a summary of the refined variants?
 
 ```
+export PIPELINE=~/sequencing_programs/TargetSpecificGATKSequencingPipeline-0.1.jar
 export OUT_DIR=$DATA_DIR/svm_filter/
 export VCF="$OUT_DIR"/svm.filtered.refined.vcf
 export CONF=~/sequencing_programs/ubuntu.application.properties
