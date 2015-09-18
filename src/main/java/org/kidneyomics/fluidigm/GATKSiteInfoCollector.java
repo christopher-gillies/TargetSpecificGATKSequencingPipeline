@@ -64,6 +64,7 @@ public class GATKSiteInfoCollector implements InfoCollector {
 	@Override
 	public void collectInfo(String fileOut) throws Exception {
 		
+		logger.info("Reading VCF: "  + vcf);
 		HashSet<String> indels = new HashSet<String>();
 		/*
 		 * Read gold indels
@@ -248,52 +249,13 @@ public class GATKSiteInfoCollector implements InfoCollector {
 				gts = vline.parseGenotypeFieldBySampleIds(gtfp, vline.getSampleIds());
 			}
 			
-			int nonMissingCount = 0;
-			
-			int refDepth = 0;
-			int altDepth = 0;
-			int hetCount = 0;
-			for(GenotypeField gt : gts) {
-				if(!gt.getIsMissing()) {
-					nonMissingCount++;
-					
-					//Only use allele depth if we have a parser that can get it!
-					if(gtfp.getClass().equals(GT_AD_DP_GQFieldParser.class)) {
-						if(gt.getAlleles()[0] != gt.getAlleles()[1] && (gt.getAlleles()[0] == 0 || gt.getAlleles()[1] == 0) && gt.getGenotypeQuality() > 20) {
-							refDepth += AlleleBalanceAndAltDepthCalculator.refDepth(gt);
-							altDepth += AlleleBalanceAndAltDepthCalculator.altDepth(gt);
-							hetCount++;
-						}
-						
-					}
-				}
-				
-			}
-			
-			String alleleBalance = "NA";
-			String meanAltDepth = "NA";
-			String alleleDosagePhred = "NA";
-			String normalizedAlleleDosagePhred = "NA";
-			if(hetCount > 0) {
-				alleleBalance = Float.toString(altDepth / (float) (altDepth + refDepth));
-				meanAltDepth = Float.toString(altDepth / ((float) hetCount));
-				
-				double res = AlleleDosageCalculator.getPhredScaledPvalue(Math.round(refDepth / (float) hetCount), Math.round(altDepth / (float) hetCount));
-				alleleDosagePhred = Double.toString(res);
-				
-				double normalizedRes = res / Math.round(altDepth / (float) hetCount);
-				normalizedAlleleDosagePhred = Double.toString(normalizedRes);
-				/*
-				if(res < 0.0) {
-					logger.info("Allele dosage less test than 0! = " + res + "\t" + vline.getId("_") + "\tNumber of hets: " + hetCount +  
-							"\tRef depth: " + refDepth + "\tNormalized ref depth: " + Math.round(refDepth / (float) hetCount) +
-							"\tAlt depth: " + altDepth + "\tNormalized alt depth: " + Math.round(altDepth / (float) hetCount)
-							);
-				}
-				*/
-			}
-			
-			double callrate = nonMissingCount / ((double) gts.size());
+			FeatureCalculator featureCalculator = new SVMFeatureCalculator();
+			featureCalculator.calculate(gts, gtfp.getClass().equals(GT_AD_DP_GQFieldParser.class));
+			String alleleBalance = featureCalculator.getMeanAlleleBalance();
+			String meanAltDepth = featureCalculator.getMeanAltDepth();
+			String alleleDosagePhred = featureCalculator.getAlleleDosageTest();
+			String normalizedAlleleDosagePhred = featureCalculator.getNormalizedAlleleDosageTest();
+			double callrate = featureCalculator.getCallRate();
 			 
 			String chrPos = vline.getChrom() + ":" + vline.getPos();
 			

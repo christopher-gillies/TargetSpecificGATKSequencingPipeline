@@ -42,6 +42,7 @@ public class MakePipeline {
 		SELECT_SITES_BY_INTERVAL,
 		SELECT_SAMPLES,
 		SAMPLE_CALL_RATE,
+		ANNOTATE_FEATURES,
 		UNKNOWN
 	}
 	
@@ -510,6 +511,12 @@ public class MakePipeline {
 			FileUtils.write(new File(mp.getOutput()), sb.toString());
 			break;
 		}
+		case ANNOTATE_FEATURES:
+		{
+			VCFAnnotator annotator = (VCFAnnotator) context.getBean("vcfAnnotatorImpl");
+			annotator.annotate(mp.getVcf(), mp.getOutput());
+			break;
+		}
 		case UNKNOWN:
 		{
 			break;
@@ -656,7 +663,7 @@ public class MakePipeline {
 		options.addOption("unifiedGenotyper",false,"Use UnifiedGenotyper instead of HaplotypeCaller");
 		options.addOption("snpsOnly",false,"Only apply svm filter to snps allow all indels to pass");
 		options.addOption("outMatrix",false,"output a matrix instead of VCF for site subset");
-		options.addOption("command",true,"align, call, trim, makeLocations, variantQc, hardFilter, hardGenotypeFilter, normalize, reheader, selectSites, selectSitesByInterval, selectSamples, svmFilter, sampleCallRate [REQUIRED]");
+		options.addOption("command",true,"align, call, trim, makeLocations, variantQc, hardFilter, hardGenotypeFilter, normalize, reheader, selectSites, selectSitesByInterval, selectSamples, svmFilter, sampleCallRate, annotateFeatures [REQUIRED]");
 		options.addOption("conf",true,"the configuration file or properties file");
 		options.addOption("output",true,"the target or directory to write to");
 		options.addOption("fastqFiles",true,"name of file containing FASTQ files and sample names");
@@ -787,6 +794,8 @@ public class MakePipeline {
 				mp.setCommand(COMMAND.SVM_FILTER);
 			} else if(value.equals("sampleCallRate")) {
 				mp.setCommand(COMMAND.SAMPLE_CALL_RATE);
+			} else if(value.equals("annotateFeatures")) { 
+				mp.setCommand(COMMAND.ANNOTATE_FEATURES);
 			} else {
 				mp.setCommand(COMMAND.UNKNOWN);
 			}
@@ -1288,6 +1297,7 @@ public class MakePipeline {
 			}
 			break;
 		}
+		case ANNOTATE_FEATURES:
 		case SAMPLE_CALL_RATE:
 		case SVM_FILTER:
 		case NORMALIZE:
