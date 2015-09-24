@@ -12,6 +12,20 @@ public class SVMScriptWriter implements TemplateStringWriter {
 	
 	private String confirmedSites = null;
 	
+	private boolean useBayes = false;
+	
+	
+	
+	public boolean isUseBayes() {
+		return useBayes;
+	}
+
+
+	public void setUseBayes(boolean useBayes) {
+		this.useBayes = useBayes;
+	}
+
+
 	public String getOutDir() {
 		return outDir;
 	}
@@ -42,6 +56,12 @@ public class SVMScriptWriter implements TemplateStringWriter {
 		} else {
 			st = group.getInstanceOf("sitesvmqcscriptconfirmed");
 			st.add("confirmedSites", confirmedSites);
+		}
+		
+		if(useBayes) {
+			st.add("useBayes", "TRUE");
+		} else {
+			st.add("useBayes", "FALSE");
 		}
 		
 		st.add("statsFile", statsFile);

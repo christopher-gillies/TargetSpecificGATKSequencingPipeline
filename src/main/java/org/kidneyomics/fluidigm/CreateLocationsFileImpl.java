@@ -40,6 +40,8 @@ public class CreateLocationsFileImpl {
 	public void writeLocations(Collection<String> genes, int pad, String output, String field) throws Exception {
 		
 		logger.info("Number of genes: " + genes.size());
+		
+		logger.info("Field to use: " + field);
 		HashSet<String> genesSet = new HashSet<String>();
 		HashSet<String> visitedGenes = new HashSet<String>();
 		

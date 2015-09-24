@@ -3,6 +3,8 @@ library(ggplot2)
 library(e1071)
 library(impute)
 
+useBayes = <useBayes>;
+
 #READ SNP TABLE
 setwd("<outDir>");
 tbl = read.table("<statsFile>",header=TRUE);
@@ -59,11 +61,15 @@ svm.model = svm(CONSENSUS ~ CALLRATE + QD + RP_RANKSUM + MEAN_ALLELE_BALANCE  + 
 
 pred.snps = predict(svm.model,imputed.values,probability=TRUE);
 snps$P_PASS = attr(pred.snps,"probabilities")[,"PASS"]
-
-snps$SVM = snps$P_PASS >= 0.5
 snps$P_FILTER = attr(pred.snps,"probabilities")[,"FILTER"]	
-#snps$SVM = (snps$P_PASS * snps$PRIOR_TRUE) >= (snps$P_FILTER * snps$PRIOR_FALSE) 
 snps$POSTERIOR = (snps$P_PASS * snps$PRIOR_TRUE) / (  (snps$P_PASS * snps$PRIOR_TRUE) + (snps$P_FILTER * snps$PRIOR_FALSE));
+
+if(useBayes) {
+	snps$SVM = snps$POSTERIOR;
+} else {
+	snps$SVM = snps$P_PASS >= 0.5;
+}
+
 
 snps$SVM_ADJ = snps$SVM
 snps[rownames(subset(snps, PASS_1KG == "FILTER" | PASS_EXAC == "FILTER")),"SVM_ADJ"] = FALSE
@@ -134,11 +140,15 @@ imputed.values.training$CONSENSUS = factor(imputed.values.training$CONSENSUS,lev
 svm.model = svm(CONSENSUS ~ CALLRATE + QD + RP_RANKSUM + MEAN_ALLELE_BALANCE  + INBREEDING + NORMALIZED_ALLELE_DOSAGE_TEST  + MQ_RANKSUM  + BASEQ_RANKSUM + MEAN_ALT_DEPTH,data=imputed.values.training,kernel="radial",scale=FALSE,probability=TRUE,cost=1)
 pred.indels = predict(svm.model,imputed.values,probability=TRUE);
 indels$P_PASS = attr(pred.indels,"probabilities")[,"PASS"]
-
-indels$SVM = indels$P_PASS >= 0.5
 indels$P_FILTER = attr(pred.indels,"probabilities")[,"FILTER"]	
-#indels$SVM = (indels$P_PASS * indels$PRIOR_TRUE) >= (indels$P_FILTER * indels$PRIOR_FALSE) 
 indels$POSTERIOR = (indels$P_PASS * indels$PRIOR_TRUE) / (  (indels$P_PASS * indels$PRIOR_TRUE) + (indels$P_FILTER * indels$PRIOR_FALSE));
+
+
+if(useBayes) {
+	indels$SVM = indels$POSTERIOR >= 0.5; 
+} else {
+	indels$SVM = indels$P_PASS >= 0.5;
+}
 
 write.table(indels[,c("KEY","P_PASS","POSTERIOR","SVM","CHR_POS","IN_DBSNP","PASS_EXAC","PASS_1KG","CONSENSUS","CONFIRMED")],file="svm.indel.predictions.txt",sep="\t",row.names=FALSE,quote=FALSE);
 

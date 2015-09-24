@@ -107,6 +107,7 @@ public class MakePipeline {
 	
 	private double minCallRate = 0.5;
 	
+	private boolean useBayes = false;
 	
 	public boolean isRunVariantQC() {
 		return runVariantQC;
@@ -178,8 +179,17 @@ public class MakePipeline {
 	}
 
 	
+	
 
 
+
+	public boolean isUseBayes() {
+		return useBayes;
+	}
+
+	public void setUseBayes(boolean useBayes) {
+		this.useBayes = useBayes;
+	}
 
 	public boolean isSnpsOnly() {
 		return snpsOnly;
@@ -384,6 +394,7 @@ public class MakePipeline {
 			svmScriptWriter.setOutDir(mp.getOutput());
 			svmScriptWriter.setStatsFile(statsFile);
 			svmScriptWriter.setConfirmedSites(mp.getConfirmedFile());
+			svmScriptWriter.setUseBayes(mp.isUseBayes());
 			String script = svmScriptWriter.writeTemplateToString();
 			String svmScriptFile = mp.getOutput() + "/svm.script.R";
 			FileUtils.write(new File(svmScriptFile), script);
@@ -660,6 +671,7 @@ public class MakePipeline {
 		options.addOption("keepPassSitesOnly",false,"Only keep pass sites");
 		options.addOption("runVariantLevelQC",false,"Perform QC at the variant level and the site level");
 		options.addOption("bed",false,"output a bed file instead of an interval file for makeLocations");
+		options.addOption("useBayes",false,"use bayes prior probability for svm filter");
 		options.addOption("unifiedGenotyper",false,"Use UnifiedGenotyper instead of HaplotypeCaller");
 		options.addOption("snpsOnly",false,"Only apply svm filter to snps allow all indels to pass");
 		options.addOption("outMatrix",false,"output a matrix instead of VCF for site subset");
@@ -722,6 +734,13 @@ public class MakePipeline {
 		
 		if(cmd.hasOption("help")) {
 			printHelp(options);
+		}
+		
+		
+		if(cmd.hasOption("useBayes")) {
+			mp.setUseBayes(true);
+		} else {
+			mp.setUseBayes(false);
 		}
 		
 		if(cmd.hasOption("runVariantLevelQC")) {
@@ -815,6 +834,10 @@ public class MakePipeline {
 		
 		if(cmd.hasOption("padding")) {
 			mp.setPadding(Integer.parseInt(cmd.getOptionValue("padding")));
+		}
+		
+		if(cmd.hasOption("fieldToUse")) {
+			mp.setFieldToSelect(cmd.getOptionValue("fieldToUse"));
 		}
 		
 		if(cmd.hasOption("sitesToKeep")) {
