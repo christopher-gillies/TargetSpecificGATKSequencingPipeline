@@ -250,13 +250,19 @@ public class GATKSiteInfoCollector implements InfoCollector {
 			}
 			
 			FeatureCalculator featureCalculator = new SVMFeatureCalculator();
+			
+			//Set QD to impute allele balance if there are no heterozygous sites
+			if(!qd.equals("NA")) {
+				featureCalculator.setQD(Double.parseDouble(qd));
+			}
+			
 			featureCalculator.calculate(gts, gtfp.getClass().equals(GT_AD_DP_GQFieldParser.class));
 			String alleleBalance = featureCalculator.getMeanAlleleBalance();
 			String meanAltDepth = featureCalculator.getMeanAltDepth();
 			String alleleDosagePhred = featureCalculator.getAlleleDosageTest();
 			String normalizedAlleleDosagePhred = featureCalculator.getNormalizedAlleleDosageTest();
 			double callrate = featureCalculator.getCallRate();
-			 
+			
 			String chrPos = vline.getChrom() + ":" + vline.getPos();
 			
 			String consensus = "NA";

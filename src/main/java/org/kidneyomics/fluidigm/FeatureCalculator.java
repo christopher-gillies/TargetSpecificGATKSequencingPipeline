@@ -18,4 +18,6 @@ public interface FeatureCalculator {
 	
 	String getMeanAltDepth();
 	
+	void setQD(double qd);
+	
 }
