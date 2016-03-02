@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import net.sf.samtools.util.CloseableIterator;
@@ -148,7 +149,12 @@ public class GATKSiteInfoCollector implements InfoCollector {
 			String passExac = "NA";
 			double vqsrLod = 0.0;
 			if(collectExacAnd1000G) {
-				List<VCFLine> eLines = exacQuery.query(vline.toTabixQuery());
+				List<VCFLine> eLines = null;
+				try {
+					eLines = exacQuery.query(vline.toTabixQuery());
+				} catch(Exception e) {
+					eLines = new LinkedList<VCFLine>();
+				}
 				for(VCFLine eLine : eLines) {
 					
 					if(eLine != null) {
@@ -188,7 +194,13 @@ public class GATKSiteInfoCollector implements InfoCollector {
 			String pass1kg = "NA";
 			double svmScore = 0.0;
 			if(collectExacAnd1000G) {
-				List<VCFLine> _1kgLines = _1kgQuery.query(vline.toTabixQuery());
+				List<VCFLine> _1kgLines = null;
+				//added try catch just in case chr not found in 1000G
+				try {
+					_1kgLines = _1kgQuery.query(vline.toTabixQuery());
+				} catch(Exception e) {
+					_1kgLines = new LinkedList<VCFLine>();
+				}
 				for(VCFLine _1kgLine : _1kgLines) {
 					if(_1kgLine != null) {
 						if(vline.isSNP() && _1kgLine.isSNP()) {
@@ -347,7 +359,7 @@ public class GATKSiteInfoCollector implements InfoCollector {
 			 */
 			
 			/*
-			 * Added .20 callrate critera b/c most sites with less than 20% call rate mave missing values so they cannot have other information collected correctly
+			 * Added .20 callrate criteria b/c most sites with less than 20% call rate move missing values so they cannot have other information collected correctly
 			 */
 			if(failCount < 3 && callrate >= minCallRate) {
 				if(failCount == 2) {

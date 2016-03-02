@@ -81,6 +81,8 @@ public class SVMFeatureCalculator implements FeatureCalculator {
 			meanAltDepth = Float.toString(homAltAltDepth / ((float) homAltCount));
 			logger.info("meanAltDepth = " + meanAltDepth);
 			logger.info("homAltDepth = " + homAltAltDepth);
+			//homAltAltDepth / (homAltAltDepth + refdepth) = meanAb
+			// solve for refdepth
 			double refdepth = (homAltAltDepth / meanAb) - homAltAltDepth;
 			logger.info("refAltDepth = " + refdepth);
 			double res = AlleleDosageCalculator.getPhredScaledPvalue((int) Math.round(refdepth / (float) homAltCount), Math.round(homAltAltDepth / (float) homAltCount));
