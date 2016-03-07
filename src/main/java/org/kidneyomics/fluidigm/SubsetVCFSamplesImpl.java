@@ -65,6 +65,12 @@ public class SubsetVCFSamplesImpl implements SubsetService {
 		
 		while(iter.hasNext()) {
 			VCFLine vline = iter.next();
+			
+			//3-7-2016 if this file is a gotcloud file create a new parser
+			if(vline.getFormat().equals("GT:DP:GQ:PL")) {
+				gtfp = new GT_DP_GQ_PLFieldParser();
+			}
+			
 			for(String sample : samplesToRemove) {
 				//Set all samples to remove to be missing so that we can calculate statistics more accurately
 				vline.getGenotypes().put(sample, "./.");

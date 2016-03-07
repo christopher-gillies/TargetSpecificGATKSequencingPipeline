@@ -309,9 +309,13 @@ public class GATKSiteInfoCollector implements InfoCollector {
 					failCount++;
 				}
 				
-				if(!alleleBalance.equals("NA") && Double.parseDouble(alleleBalance) > 0.8) {
-					failCount++;
-				}
+				/*
+				 * 3-7-2016 I do not think this makes sense to filter if the balance is > 80%
+				 */
+				
+				//if(!alleleBalance.equals("NA") && Double.parseDouble(alleleBalance) > 0.8) {
+				//	failCount++;
+				//}
 				
 				if(!meanAltDepth.equals("NA") && Double.parseDouble(meanAltDepth) < 10) {
 					failCount++;

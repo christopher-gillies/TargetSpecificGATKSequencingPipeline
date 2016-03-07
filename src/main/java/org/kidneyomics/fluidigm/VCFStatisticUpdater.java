@@ -79,14 +79,16 @@ public class VCFStatisticUpdater {
 					List<Integer> oldAlleleDepths = gt.getAllelicDepths();
 					List<Integer> newAllelDepths = new LinkedList<Integer>();
 					
-					//add reference allele depth
-					newAllelDepths.add( oldAlleleDepths.get(0));
-					//add all other allele depths
-					for(int a : sortedRemainingNonRefAlleles) {
-						newAllelDepths.add( oldAlleleDepths.get(a));
+					if(oldAlleleDepths.size() > 0) {
+						//add reference allele depth
+						newAllelDepths.add( oldAlleleDepths.get(0));
+						//add all other allele depths
+						for(int a : sortedRemainingNonRefAlleles) {
+							newAllelDepths.add( oldAlleleDepths.get(a));
+						}
+						//update allele depths
+						gt.setAllelicDepths(newAllelDepths);
 					}
-					//update allele depths
-					gt.setAllelicDepths(newAllelDepths);
 					
 					if(recodingMap.containsKey(alleles[0])) {
 						alleles[0] = recodingMap.get(alleles[0]);
@@ -102,7 +104,7 @@ public class VCFStatisticUpdater {
 				}
 			}
 			//update genotype fields to reflect new state
-			vline.updateGenotypeFields(newGts, vline.getSampleIds(), "GT:AD:DP:GQ");
+			vline.updateGenotypeFields(newGts, vline.getSampleIds(), vline.getFormat());
 			
 		}
 		
