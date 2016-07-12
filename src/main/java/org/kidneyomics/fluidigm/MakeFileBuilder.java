@@ -1156,6 +1156,135 @@ public class MakeFileBuilder implements CommandWriter {
 		return makefile.writeTemplateToString();
 	}
 
+	@Override
+	public String writeIndelRealignRecalCommands(Collection<Sample> samples, AlignArgs alignArgs) throws Exception {
+		MakeFile makefile = applicationContext.getBean(MakeFile.class);
+		
+		List<String> bams = new LinkedList<String>();
+		StringBuilder bamlist = new StringBuilder();
+		
+		for(Sample s : samples) {
+			bams.add(s.getBamFiles().get(0).getBamFile());
+		}
+
+		for(Sample sample : samples) {
+
+			MakeEntry realignRecal = new MakeEntry();
+			/*
+			 * Indel Realignment
+			 */
+			
+			if(sample.getBamFiles().size() != 1) {
+				throw new Exception("Error only 1 bam allowed for each sample. " + sample.getSampleId());
+			}
+			
+			String sampleIndelIntervals = output + "/" + sample.getSampleId() + ".interval_list";
+			ST createTargetListCommand = new ST("<java> -Xmx<jvmSize> -jar <gatk> -T RealignerTargetCreator -nt <numThreads> -R <reference> -L <intervals> -I <bam> --known <gold> --known <1000GIndels> -o <outIntervals>");
+			createTargetListCommand.add("gatk", properties.getGatk())
+			.add("java", properties.getJava())
+			.add("jvmSize", properties.getJvmSize())
+			.add("numThreads", alignArgs.getNumGatkThreads())
+			.add("reference", properties.getReference())
+			.add("bam", sample.getBamFiles().get(0).getBamFile())
+			.add("gold", properties.getGoldIndels())
+			.add("1000GIndels", properties.get_1000GIndels())
+			.add("intervals", alignArgs.getPrimerList())
+			.add("outIntervals", sampleIndelIntervals);
+	
+			realignRecal.addCommand(createTargetListCommand.render());
+			
+			String realignedBam = output + "/" + sample.getSampleId() + ".realinged.bam";
+			String realignedBamIndex = output + "/" + sample.getSampleId() + ".realinged.bai";
+			ST realignmentCommand = new ST("<java> -Xmx<jvmSize> -jar <gatk> -T IndelRealigner -R <reference> -I <bam> -known <gold> -known <1000GIndels> -L <intervals> -targetIntervals <inIntervals> -o <outbam>");
+			realignmentCommand.add("gatk", properties.getGatk())
+			.add("java", properties.getJava())
+			.add("jvmSize", properties.getJvmSize())
+			.add("reference", properties.getReference())
+			.add("bam", sample.getBamFiles().get(0).getBamFile())
+			.add("gold", properties.getGoldIndels())
+			.add("1000GIndels", properties.get_1000GIndels())
+			.add("inIntervals", sampleIndelIntervals)
+			.add("intervals", alignArgs.getPrimerList())
+			.add("outbam", realignedBam);
+			
+			realignRecal.addCommand(realignmentCommand.render());
+			
+			/*
+			 * Base Recalibration
+			 */
+			
+			String recalibratedBam = output + "/" + sample.getSampleId() + ".realinged.recalibrated.bam";
+			String recalibratedBamIndex = output + "/" + sample.getSampleId() + ".realinged.recalibrated.bai";
+			String recalTablePass1 = output + "/" + sample.getSampleId() + ".grp";
+			ST recalPass1Command = new ST("<java> -Xmx<jvmSize> -jar <gatk> -T BaseRecalibrator -nct <numThreads> -R <reference> -I <bam> --knownSites <dbsnp> --knownSites <gold> --knownSites <1000GIndels> -L <intervals> -o <bqsr>");
+			recalPass1Command.add("gatk", properties.getGatk())
+			.add("java", properties.getJava())
+			.add("jvmSize", properties.getJvmSize())
+			.add("numThreads", alignArgs.getNumGatkThreads())
+			.add("reference", properties.getReference())
+			.add("bam", realignedBam)
+			.add("dbsnp", properties.getDbsnp())
+			.add("gold", properties.getGoldIndels())
+			.add("1000GIndels", properties.get_1000GIndels())
+			.add("intervals", alignArgs.getPrimerList())
+			.add("bqsr", recalTablePass1);
+			
+			realignRecal.addCommand(recalPass1Command.render());
+			
+			String recalTablePass2= output + "/" + sample.getSampleId() + ".post.grp";
+			ST recalPass2Command = new ST("<java> -Xmx<jvmSize> -jar <gatk> -T BaseRecalibrator -nct <numThreads> -R <reference> -I <bam> --knownSites <dbsnp> --knownSites <gold> --knownSites <1000GIndels> --BQSR <bqsr_pre> -L <intervals> -o <bqsr_post>");
+			recalPass2Command.add("gatk", properties.getGatk())
+			.add("java", properties.getJava())
+			.add("jvmSize", properties.getJvmSize())
+			.add("numThreads", alignArgs.getNumGatkThreads())
+			.add("reference", properties.getReference())
+			.add("bam", realignedBam)
+			.add("dbsnp", properties.getDbsnp())
+			.add("gold", properties.getGoldIndels())
+			.add("1000GIndels", properties.get_1000GIndels())
+			.add("bqsr_pre", recalTablePass1)
+			.add("intervals", alignArgs.getPrimerList())
+			.add("bqsr_post", recalTablePass2);
+			
+			realignRecal.addCommand(recalPass2Command.render());
+			
+			
+			ST writeRecalBam = new ST("<java> -Xmx<jvmSize> -jar <gatk> -T PrintReads -R <reference> -I <bam> --BQSR <bqsr_post> -o <bamout>");
+			writeRecalBam.add("gatk", properties.getGatk())
+			.add("java", properties.getJava())
+			.add("jvmSize", properties.getJvmSize())
+			.add("reference", properties.getReference())
+			.add("bam", realignedBam)
+			.add("bamout", recalibratedBam)
+			.add("bqsr_post", recalTablePass2);
+			
+			realignRecal.addCommand(writeRecalBam.render());
+			
+			//Finish off makeentry
+			realignRecal.addCommand("touch $@");
+			realignRecal.setTarget(output + "/" + sample.getSampleId() + ".OK");
+			realignRecal.setComment("Realign and Recal for " + sample.getSampleId());
+		
+			makefile.addMakeEntry(realignRecal);
+			
+			/*
+			 * Add to bamlist
+			 */
+			bamlist.append(sample.getSampleId());
+			bamlist.append("\t");
+			bamlist.append(recalibratedBam);
+			bamlist.append("\t");
+			bamlist.append(recalibratedBamIndex);
+			bamlist.append("\t");
+			bamlist.append(".");
+			bamlist.append("\n");
+		}
+		
+		FileUtils.write(new File(output + "/bam.list.txt" ), bamlist.toString());
+		
+		return makefile.writeTemplateToString();
+	}
+
 	
 	
 

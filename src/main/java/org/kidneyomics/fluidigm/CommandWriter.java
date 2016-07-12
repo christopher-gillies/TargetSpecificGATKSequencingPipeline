@@ -4,6 +4,8 @@ import java.util.Collection;
 
 public interface CommandWriter {
 
+	String writeIndelRealignRecalCommands(Collection<Sample> samples, AlignArgs args) throws Exception;
+	
 	String writePreprocessingCommands(Collection<Sample> samples, AlignArgs args) throws Exception;
 	
 	String writeTrimCommands(Collection<Sample> samples, TrimArgs args) throws Exception;

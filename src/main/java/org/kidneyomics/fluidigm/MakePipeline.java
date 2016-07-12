@@ -43,6 +43,7 @@ public class MakePipeline {
 		SELECT_SAMPLES,
 		SAMPLE_CALL_RATE,
 		ANNOTATE_FEATURES,
+		INDEL_REALIGN_RECALIBRATE,
 		UNKNOWN
 	}
 	
@@ -188,11 +189,6 @@ public class MakePipeline {
 		this.conf = conf;
 	}
 
-	
-	
-
-
-
 	public boolean isUseBayes() {
 		return useBayes;
 	}
@@ -208,10 +204,6 @@ public class MakePipeline {
 	public void setSnpsOnly(boolean snpsOnly) {
 		this.snpsOnly = snpsOnly;
 	}
-
-
-
-
 
 	private COMMAND command = COMMAND.UNKNOWN;
 	
@@ -539,6 +531,15 @@ public class MakePipeline {
 			annotator.annotate(mp.getVcf(), mp.getOutput());
 			break;
 		}
+		case INDEL_REALIGN_RECALIBRATE:
+		{
+			Collection<Sample> samples = mp.getBamList();
+			AlignArgs alignArgs = new AlignArgs();
+			alignArgs.setPrimerList(mp.getPrimerList());
+			alignArgs.setNumGatkThreads(mp.getNumGatkThreads());
+			makefileText = commandWriter.writeIndelRealignRecalCommands(samples,alignArgs);
+			break;
+		}
 		case UNKNOWN:
 		{
 			break;
@@ -686,7 +687,7 @@ public class MakePipeline {
 		options.addOption("unifiedGenotyper",false,"Use UnifiedGenotyper instead of HaplotypeCaller");
 		options.addOption("snpsOnly",false,"Only apply svm filter to snps allow all indels to pass");
 		options.addOption("outMatrix",false,"output a matrix instead of VCF for site subset");
-		options.addOption("command",true,"align, call, trim, makeLocations, variantQc, hardFilter, hardGenotypeFilter, normalize, reheader, selectSites, selectSitesByInterval, selectSamples, svmFilter, sampleCallRate, annotateFeatures [REQUIRED]");
+		options.addOption("command",true,"align, call, trim, makeLocations, variantQc, hardFilter, hardGenotypeFilter, normalize, reheader, selectSites, selectSitesByInterval, selectSamples, svmFilter, sampleCallRate, annotateFeatures [REQUIRED], indelRealignRecal -- recalibrate bam files");
 		options.addOption("conf",true,"the configuration file or properties file");
 		options.addOption("output",true,"the target or directory to write to");
 		options.addOption("fastqFiles",true,"name of file containing FASTQ files and sample names");
@@ -834,6 +835,8 @@ public class MakePipeline {
 				mp.setCommand(COMMAND.SAMPLE_CALL_RATE);
 			} else if(value.equals("annotateFeatures")) { 
 				mp.setCommand(COMMAND.ANNOTATE_FEATURES);
+			} else if(value.equals("indelRealignRecal")) { 
+				mp.setCommand(COMMAND.INDEL_REALIGN_RECALIBRATE);
 			} else {
 				mp.setCommand(COMMAND.UNKNOWN);
 			}
@@ -1354,6 +1357,32 @@ public class MakePipeline {
 				}
 			}
 			break;
+		case INDEL_REALIGN_RECALIBRATE: 
+		{
+			if(StringUtils.isEmpty(this.getBamFiles())) {
+				throw new Exception("Please set bamFiles option");
+			} else {
+				File f = new File(this.getBamFiles());
+				if(!f.exists()) {
+					throw new Exception("bamFiles does not exist");
+				}
+			}
+			
+			if(StringUtils.isEmpty(this.getPrimerList())) {
+				throw new Exception("Please set primerLocations option");
+			} else {
+				File f = new File(this.getPrimerList());
+				if(!f.exists()) {
+					throw new Exception("primerLocations file does not exist");
+				}
+				
+				if(!this.getPrimerList().endsWith("intervals")) {
+					throw new Exception("primerLocations file should have extension 'intervals' this is required for GATK");
+				}
+			}
+			
+			break;
+		}
 		case UNKNOWN:
 			
 			printHelp(this.getOptions());
