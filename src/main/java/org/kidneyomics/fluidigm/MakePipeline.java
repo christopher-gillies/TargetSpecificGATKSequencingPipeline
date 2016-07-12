@@ -109,6 +109,16 @@ public class MakePipeline {
 	
 	private boolean useBayes = false;
 	
+	private int alternativeAlleleDepthSVM = 10;
+	
+	public int getAlternativeAlleleDepthSVM() {
+		return alternativeAlleleDepthSVM;
+	}
+
+	public void setAlternativeAlleleDepthSVM(int alternativeAlleleDepthSVM) {
+		this.alternativeAlleleDepthSVM = alternativeAlleleDepthSVM;
+	}
+
 	public boolean isRunVariantQC() {
 		return runVariantQC;
 	}
@@ -383,6 +393,7 @@ public class MakePipeline {
 			
 			//1
 			GATKSiteInfoCollector siteInfoCollector = (GATKSiteInfoCollector) context.getBean("siteInfoCollector");
+			siteInfoCollector.setAltAlleleDepth(mp.getAlternativeAlleleDepthSVM());
 			siteInfoCollector.setMinCallRate(mp.getMinCallRate());
 			siteInfoCollector.setVcf(mp.getVcf());
 			siteInfoCollector.setCollectExacAnd1000G(true);
@@ -710,6 +721,10 @@ public class MakePipeline {
 		options.addOption("sitesToKeep",true,"the sites to keep");
 		options.addOption("samplesToKeep",true,"the samples to keep");
 		
+		//
+		options.addOption("svmAltDepth",true,"Variants with an alternative allele depth less than this will have a mark against them");
+		
+		
 		options.addOption("idMap",true,"a map of the ids, there can be multiple possible mappings. This should be a file [NEW_ID]\t[OLD_ID]");
 		
 		
@@ -736,6 +751,10 @@ public class MakePipeline {
 			printHelp(options);
 		}
 		
+		
+		if(cmd.hasOption("svmAltDepth")) {
+			mp.setAlternativeAlleleDepthSVM(Integer.parseInt(cmd.getOptionValue("svmAltDepth")));
+		}
 		
 		if(cmd.hasOption("useBayes")) {
 			mp.setUseBayes(true);

@@ -37,6 +37,20 @@ public class GATKSiteInfoCollector implements InfoCollector {
 	
 	private double minCallRate = 0.5;
 	
+	private int altAlleleDepth = 10;
+	
+	
+	
+	public int getAltAlleleDepth() {
+		return altAlleleDepth;
+	}
+
+	public void setAltAlleleDepth(int altAlleleDepth) {
+		this.altAlleleDepth = altAlleleDepth;
+	}
+
+
+
 	private boolean collectExacAnd1000G = false;
 	
 	
@@ -317,7 +331,7 @@ public class GATKSiteInfoCollector implements InfoCollector {
 				//	failCount++;
 				//}
 				
-				if(!meanAltDepth.equals("NA") && Double.parseDouble(meanAltDepth) < 10) {
+				if(!meanAltDepth.equals("NA") && Double.parseDouble(meanAltDepth) < altAlleleDepth) {
 					failCount++;
 				}
 
@@ -349,7 +363,7 @@ public class GATKSiteInfoCollector implements InfoCollector {
 					failCount++;
 				}
 				
-				if(!meanAltDepth.equals("NA") && Double.parseDouble(meanAltDepth) < 10) {
+				if(!meanAltDepth.equals("NA") && Double.parseDouble(meanAltDepth) < altAlleleDepth) {
 					failCount++;
 				}
 				
