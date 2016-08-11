@@ -3,6 +3,7 @@ package org.kidneyomics.fluidigm;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.HashSet;
@@ -59,9 +60,15 @@ public class CreateLocationsFileImpl {
 		
 		
 		// Open the file
+		//8-11-2016
+		//Allow gtf file to be in gzip format or not
 		FileInputStream fstream = new FileInputStream(filename);
-		GZIPInputStream gzipin = new GZIPInputStream(fstream);
-		BufferedReader br = new BufferedReader(new InputStreamReader(gzipin));
+		InputStream is = fstream;
+		if(filename.endsWith(".gz")) {
+			GZIPInputStream gzipin = new GZIPInputStream(fstream);
+			is = gzipin;
+		}
+		BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
 		String line;
 		int count = 0;
