@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.kidneyomics.vcf.GTFieldParser;
 import org.kidneyomics.vcf.GenotypeField;
 import org.kidneyomics.vcf.GenotypeFieldParser;
 import org.kidneyomics.vcf.VCFLine;
@@ -69,6 +70,10 @@ public class SubsetVCFSamplesImpl implements SubsetService {
 			//3-7-2016 if this file is a gotcloud file create a new parser
 			if(vline.getFormat().equals("GT:DP:GQ:PL")) {
 				gtfp = new GT_DP_GQ_PLFieldParser();
+			} else if(vline.getFormat().equals("GT")) {
+				//11-2-2016
+				//Add support for GT only (Exome Chip)
+				gtfp = new GTFieldParser();
 			}
 			
 			for(String sample : samplesToRemove) {
