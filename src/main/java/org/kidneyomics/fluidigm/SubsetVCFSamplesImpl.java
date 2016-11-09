@@ -82,6 +82,8 @@ public class SubsetVCFSamplesImpl implements SubsetService {
 		GenotypeFieldParser gtfpGotCloud = new GT_DP_GQ_PLFieldParser();
 		GenotypeFieldParser gtfpGTONLY = new GTFieldParser();
 		GenotypeFieldParser gtfpBeagle = new GT_DS_GLFieldParser();
+		GenotypeFieldParser gtfpBeagle2 = new GT_DS_GPFieldParser();
+		
 		while(iter.hasNext()) {
 			VCFLine vline = iter.next();
 			
@@ -95,6 +97,9 @@ public class SubsetVCFSamplesImpl implements SubsetService {
 			} else if(vline.getFormat().equals("GT:DS:GL")) {
 				// whole genome sequence file
 				gtfp = gtfpBeagle;
+			} else if(vline.getFormat().equals("GT:DS:GP")) {
+				// whole genome sequence file
+				gtfp = gtfpBeagle2;
 			} else {
 				gtfp = gtfpDefault;
 			}
