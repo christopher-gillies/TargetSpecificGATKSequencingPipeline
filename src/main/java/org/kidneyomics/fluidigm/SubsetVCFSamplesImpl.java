@@ -4,7 +4,12 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -13,6 +18,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.kidneyomics.vcf.GTFieldParser;
+import org.kidneyomics.vcf.GT_DS_GLFieldParser;
 import org.kidneyomics.vcf.GenotypeField;
 import org.kidneyomics.vcf.GenotypeFieldParser;
 import org.kidneyomics.vcf.VCFLine;
@@ -20,6 +26,9 @@ import org.kidneyomics.vcf.VCFFile;
 import org.kidneyomics.vcf.VCFFile.VCFLineIterator;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import net.sf.samtools.util.BlockCompressedOutputStream;
+
 
 @Scope("prototype")
 @Component("subsetVCFSamplesImpl")
@@ -56,24 +65,38 @@ public class SubsetVCFSamplesImpl implements SubsetService {
 		headerLines.set(headerLines.size() - 1, VCFStatisticUpdater.makeNewHeader(samplesToKeep));
 		
 		
-		Writer writer = new BufferedWriter( new FileWriter(new File(out)));
+		BufferedWriter writer = null;
 		
+		if(out.endsWith(".gz")) {
+			BlockCompressedOutputStream outstream = new BlockCompressedOutputStream(new File(out));
+			writer = new BufferedWriter( new OutputStreamWriter(outstream));
+		} else {
+			writer = Files.newBufferedWriter(Paths.get(out), Charset.defaultCharset(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+		}
 		
 		writer.write(StringUtils.join(headerLines, "\n"));
 		writer.write("\n");
 		
-		GenotypeFieldParser gtfp = new GT_AD_DP_GQFieldParser();
-		
+		GenotypeFieldParser gtfp = null;
+		GenotypeFieldParser gtfpDefault = new GT_AD_DP_GQFieldParser();
+		GenotypeFieldParser gtfpGotCloud = new GT_DP_GQ_PLFieldParser();
+		GenotypeFieldParser gtfpGTONLY = new GTFieldParser();
+		GenotypeFieldParser gtfpBeagle = new GT_DS_GLFieldParser();
 		while(iter.hasNext()) {
 			VCFLine vline = iter.next();
 			
 			//3-7-2016 if this file is a gotcloud file create a new parser
 			if(vline.getFormat().equals("GT:DP:GQ:PL")) {
-				gtfp = new GT_DP_GQ_PLFieldParser();
+				gtfp = gtfpGotCloud;
 			} else if(vline.getFormat().equals("GT")) {
 				//11-2-2016
 				//Add support for GT only (Exome Chip)
-				gtfp = new GTFieldParser();
+				gtfp = gtfpGTONLY;
+			} else if(vline.getFormat().equals("GT:DS:GL")) {
+				// whole genome sequence file
+				gtfp = gtfpBeagle;
+			} else {
+				gtfp = gtfpDefault;
 			}
 			
 			for(String sample : samplesToRemove) {
